@@ -37,7 +37,7 @@ def main(argv=None):
         enable_jenkins = False
         enable_memcache = False
         enable_tomcat = False
-        
+
         for o, a in opts:
             if o in ("-h", "--help"):
                 print __doc__
@@ -61,20 +61,20 @@ def main(argv=None):
             if o in ("--enable_tomcat"):
                 if a.lower() in ("1", "true"):
                     enable_tomcat = True
-        
-        
+
+
         # Check the command line options
         if size is None:
             raise Usage, "the --size option must be specified"
         if image is None:
             raise Usage, "the --image option must be specified"
-        
+
         # Create a server with the specified image and size
         node = create_server(image, size)
-        
+
         # Use Fabric to install mercury
         install_mercury(node)
-        
+
         # Ensure that the correct services are present
         if enable_apache is False:
             disable_apache(node)
@@ -86,19 +86,19 @@ def main(argv=None):
             disable_memcache(node)
         if enable_tomcat is False:
             disable_tomcat(node)
-            
+
         # Disable mercury
         disable_mercury(node)
-        
+
         # Finally, reboot the node
         print 'Rebooting the node...'
         node.reboot()
         print 'Done. Configuration complete.'
-        
-        os.putenv('CM_SLAVE_IP', node.public_ip[0])
-        
+
+        fabric.local('export CM_SLAVE_IP=%s' % (node.public_ip[0]), pty=True)
+
         return 0
-        
+
     except Usage, err:
         print >>sys.stderr, err.msg
         print >>sys.stderr, "for help use --help"
@@ -110,60 +110,60 @@ def create_server(image, size):
     print "Provisioning complete, you can ssh as root to %s" % node.public_ip[0]
     if node.extra.get('password'):
         print "The root user's password is %s" % node.extra.get('password')
-    
+
     return node
 
 def install_mercury(node):
     cm_libcloud.fabric_setup(node)
-    
+
     print 'Installing git'
     fabric.run("apt-get install git-core -y", pty=True)
-    
+
     print 'Installing Mercury'
     fabric.run("apt-get install git-core -y", pty=True)
     fabric.run("git clone git://github.com/pantheon-systems/mercury.git -b master /opt/pantheon", pty=True)
-    
+
     # Need to preseed some options for postfix
     fabric.run("echo 'postfix postfix/main_mailer_type select Internet Site' | debconf-set-selections", pty=True)
     fabric.run("echo 'postfix postfix/mailname string $HOSTNAME' | debconf-set-selections", pty=True)
     fabric.run("echo 'postfix postfix/destinations string localhost.localdomain, localhost' | debconf-set-selections", pty=True)
 
-    
+
     with fabric.cd('/opt/pantheon'):
         fabric.run("python setup.py", pty=True)
-    
+
     fabric.run("apt-get update", pty=True)
     fabric.run("bcfg2 -vqed", pty=True)
 
 def disable_apache(node):
     _disable_initd(node, ["apache2"])
-    
+
 def disable_mysql(node):
     _disable_upstart(node, ["mysql"])
-    
+
 def disable_jenkins(node):
     _disable_initd(node, ["jenkins"])
-    
+
 def disable_memcache(node):
     _disable_initd(node, ["memcached"])
-    
+
 def disable_tomcat(node):
     _disable_initd(node, ["tomcat6"])
 
 def disable_mercury(node):
     _disable_initd(node, ["bcfg2", "pound"])
-        
+
 def _disable_initd(node, scripts):
     cm_libcloud.fabric_setup(node)
     for script in scripts:
         fabric.run("update-rc.d " + script + " disable", pty=True)
-        
+
 def _disable_upstart(node, scripts):
     cm_libcloud.fabric_setup(node)
     for script in scripts:
         with fabric.cd('/etc/init'):
             fabric.run("mv " + script + ".conf " + script + ".conf.disabled", pty=True)
-    
+
 
 if __name__ == "__main__":
     sys.exit(main())
