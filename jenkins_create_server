@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-import cm_build_scripts.create_server
+from . import create_server
 import os
 
 args = {
@@ -8,6 +8,6 @@ args = {
     '--size': os.environ['CM_SIZE'],
 }
 
-cm_build_scripts.create_server.main(args)
+create_server.main(args)
 
 # --size=$CM_SIZE --image=$CM_IMAGE --enable_apache=$CM_ENABLE_APACHE --enable_mysql=$CM_ENABLE_MYSQL --enable_jenkins=$CM_ENABLE_JENKINS --enable_memcache=$CM_ENABLE_MEMCACHE --enable_tomcat=$CM_ENABLE_TOMCAT
