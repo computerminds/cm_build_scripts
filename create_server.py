@@ -95,7 +95,7 @@ def main(argv=None):
         node.reboot()
         print 'Done. Configuration complete.'
 
-        fabric.local('export CM_SLAVE_IP=%s' % (node.public_ip[0]), pty=True)
+        fabric.local('export CM_SLAVE_IP=%s' % (node.public_ip[0]))
 
         return 0
 
