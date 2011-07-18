@@ -1,0 +1,89 @@
+#! /usr/bin/env python
+
+"""Create server script
+
+Valid options:
+  --size - The size of the machine to create (required)
+  --image - The image to use for the machine (required)
+  --enable_apache - Should apache be left enabled
+  --enable_mysql - Should mysql be left enabled
+  --enable_jenkins - Should jenkins be left enabled
+  --enable_memcache - Should memcache be left enabled
+  --enable_tomcat - Should tomcat be left enabled
+  --help - Print this help
+"""
+
+import sys
+import getopt
+from helpers import cm_libcloud
+
+class Usage(Exception):
+    def __init__(self, msg):
+        self.msg = msg
+
+def main(argv=None):
+    if argv is None:
+        argv = sys.argv
+    try:
+        try:
+            opts, args = getopt.getopt(argv[1:], "h", ["help", "size=", "image=", "enable_apache=", "enable_mysql=", "enable_jenkins=", "enable_memcache=", "enable_tomcat="])
+        except getopt.error, msg:
+             raise Usage(msg)
+        # process options
+        size = None
+        image = None
+        enable_apache = False
+        enable_mysql = False
+        enable_jenkins = False
+        enable_memcache = False
+        enable_tomcat = False
+        
+        for o, a in opts:
+            if o in ("-h", "--help"):
+                print __doc__
+                return 0;
+            if o in ("--size"):
+                size = a
+            if o in ("--image"):
+                image = a
+            if o in ("--enable_apache"):
+                if a.lower() in ("1", "true"):
+                    enable_apache = True
+            if o in ("--enable_mysql"):
+                if a.lower() in ("1", "true"):
+                    enable_mysql = True
+            if o in ("--enable_jenkins"):
+                if a.lower() in ("1", "true"):
+                    enable_jenkins = True
+            if o in ("--enable_memcache"):
+                if a.lower() in ("1", "true"):
+                    enable_memcache = True
+            if o in ("--enable_tomcat"):
+                if a.lower() in ("1", "true"):
+                    enable_tomcat = True
+        
+        
+        # Check the command line options
+        if size is None:
+            raise Usage, "the --size option must be specified"
+        if image is None:
+            raise Usage, "the --image option must be specified"
+        
+        # Create a server with the specified image and size
+        create_server(image, size)
+        
+    except Usage, err:
+        print >>sys.stderr, err.msg
+        print >>sys.stderr, "for help use --help"
+        return 2
+
+def create_server(image, size):
+    print "Provisioning server and running deployment processes"
+    node = cm_libcloud.create_server(image, size)
+    print "Provisioning complete, you can ssh as root to %s" % node.public_ip[0]
+    if node.extra.get('password'):
+        print "The root user's password is %s" % node.extra.get('password')
+    
+
+if __name__ == "__main__":
+    sys.exit(main())
