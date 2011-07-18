@@ -3,10 +3,10 @@
 import create_server
 import os
 
-args = {
-    'dummy' : '',
-    '--size': os.environ['CM_SIZE'],
-}
+args = [
+    'dummy'
+    '--size=' + os.environ['CM_SIZE'],
+]
 
 create_server.main(args)
 
