@@ -18,7 +18,7 @@ if __name__ == "__main__":
     output_ip = os.environ['WORKSPACE'] + "/node_ip.output"
     if output_ip is not None:
             with open(output_ip, 'r') as f:
-                ip = f.read
+                ip = f.read()
                 args.append("--ip=%s" % (ip))
 
     sys.exit(aegir_slave.main(args))
