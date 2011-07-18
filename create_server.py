@@ -98,9 +98,7 @@ def main(argv=None):
         # Finally, reboot the node
         print 'Rebooting the node...'
         node.reboot()
-        print 'Waiting for node to reboot'
-        time.sleep(5)
-        while node.state != NodeState.RUNNING:
+        while node.state is NodeState.REBOOTING:
             print 'Waiting for node to reboot'
             time.sleep(5)
         print 'Done. Configuration complete.'
