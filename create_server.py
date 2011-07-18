@@ -27,7 +27,7 @@ def main(argv=None):
         argv = sys.argv
     try:
         try:
-            opts, args = getopt.getopt(argv[1:], "h", ["help", "size=", "image=", "enable_apache=", "enable_mysql=", "enable_jenkins=", "enable_memcache=", "enable_tomcat=", "--output_ip="])
+            opts, args = getopt.getopt(argv[1:], "h", ["help", "size=", "image=", "enable_apache=", "enable_mysql=", "enable_jenkins=", "enable_memcache=", "enable_tomcat=", "output_ip="])
         except getopt.error, msg:
              raise Usage(msg)
         # process options
