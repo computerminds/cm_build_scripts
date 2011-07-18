@@ -13,7 +13,7 @@ Valid options:
   --help - Print this help
 """
 
-import sys, getopt, socket
+import sys, getopt, socket, os
 from helpers import cm_libcloud
 import fabric.api as fabric
 
@@ -94,6 +94,10 @@ def main(argv=None):
         print 'Rebooting the node...'
         node.reboot()
         print 'Done. Configuration complete.'
+        
+        os.putenv('CM_SLAVE_IP', node.public_ip[0])
+        
+        return 0
         
     except Usage, err:
         print >>sys.stderr, err.msg
