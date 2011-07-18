@@ -1,10 +1,12 @@
 from libcloud.compute.types import Provider
 from libcloud.compute.providers import get_driver
 from libcloud.compute.deployment import MultiStepDeployment, ScriptDeployment, SSHKeyDeployment
-import os, sys, random, string, ConfigParser, time
+import os, sys, random, string, ConfigParser, time, socket
 
 import libcloud.security
 libcloud.security.VERIFY_SSL_CERT = True
+
+import fabric.api as fabric
 
 
 # Fetch some values from the config file
@@ -30,8 +32,7 @@ def dependency_check():
         sys.exit(1)
 
 # Helper script to generate a random password
-def gen_passwd():
-    N=8
+def gen_passwd(N=8):
     return ''.join(random.choice(string.ascii_letters + string.digits) for x in range(N))
     
 # Return a connection to our chosen Provider.
@@ -69,4 +70,14 @@ def create_server(selected_image, selected_size, node_name=None):
     node = conn.deploy_node(name=node_name,image=preferred_image[0], size=preferred_size[0], deploy=msd)
     
     return node
+
+def fabric_setup(node, user='root'):
+    domain = socket.getfqdn(node.public_ip[0])
+    fabric.env.host_string = domain
+    fabric.env.user = user
+    
+def fabric_setup_ip(ip, user='root'):
+    domain = socket.getfqdn(ip)
+    fabric.env.host_string = domain
+    fabric.env.user = user
 
