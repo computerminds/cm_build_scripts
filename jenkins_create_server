@@ -15,6 +15,7 @@ if __name__ == "__main__":
         "--enable_jenkins=" + os.environ['CM_ENABLE_JENKINS'] + "",
         "--enable_memcache=" + os.environ['CM_ENABLE_MEMCACHE'] + "",
         "--enable_tomcat=" + os.environ['CM_ENABLE_TOMCAT'] + "",
+        "--output_ip=" + os.environ['WORKSPACE'] + "/node_ip.output",
     ]
     sys.exit(create_server.main(args))
 

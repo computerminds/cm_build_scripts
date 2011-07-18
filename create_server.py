@@ -10,6 +10,7 @@ Valid options:
   --enable_jenkins - Should jenkins be left enabled
   --enable_memcache - Should memcache be left enabled
   --enable_tomcat - Should tomcat be left enabled
+  --output_ip
   --help - Print this help
 """
 
@@ -26,7 +27,7 @@ def main(argv=None):
         argv = sys.argv
     try:
         try:
-            opts, args = getopt.getopt(argv[1:], "h", ["help", "size=", "image=", "enable_apache=", "enable_mysql=", "enable_jenkins=", "enable_memcache=", "enable_tomcat="])
+            opts, args = getopt.getopt(argv[1:], "h", ["help", "size=", "image=", "enable_apache=", "enable_mysql=", "enable_jenkins=", "enable_memcache=", "enable_tomcat=", "--output_ip="])
         except getopt.error, msg:
              raise Usage(msg)
         # process options
@@ -37,6 +38,7 @@ def main(argv=None):
         enable_jenkins = False
         enable_memcache = False
         enable_tomcat = False
+        output_ip = None
 
         for o, a in opts:
             if o in ("-h", "--help"):
@@ -61,6 +63,8 @@ def main(argv=None):
             if o in ("--enable_tomcat"):
                 if a.lower() in ("1", "true"):
                     enable_tomcat = True
+            if o in ("--output_ip"):
+                output_ip = a
 
 
         # Check the command line options
@@ -73,29 +77,36 @@ def main(argv=None):
         node = create_server(image, size)
 
         # Use Fabric to install mercury
-        install_mercury(node)
+        #install_mercury(node)
 
         # Ensure that the correct services are present
         if enable_apache is False:
-            disable_apache(node)
+            pass
+            #disable_apache(node)
         if enable_mysql is False:
-            disable_mysql(node)
+            pass
+            #disable_mysql(node)
         if enable_jenkins is False:
-            disable_jenkins(node)
+            pass
+            #disable_jenkins(node)
         if enable_memcache is False:
-            disable_memcache(node)
+            pass
+            #disable_memcache(node)
         if enable_tomcat is False:
-            disable_tomcat(node)
+            pass
+            #disable_tomcat(node)
 
         # Disable mercury
-        disable_mercury(node)
+        #disable_mercury(node)
 
         # Finally, reboot the node
         print 'Rebooting the node...'
         node.reboot()
         print 'Done. Configuration complete.'
 
-        fabric.local('export CM_SLAVE_IP=%s' % (node.public_ip[0]))
+        if output_ip is not None:
+            with open(output_ip, 'w') as f:
+                f.write(node.public_ip[0])
 
         return 0
 
