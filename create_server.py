@@ -14,9 +14,10 @@ Valid options:
   --help - Print this help
 """
 
-import sys, getopt, socket, os
+import sys, getopt, socket, os, time
 from helpers import cm_libcloud
 import fabric.api as fabric
+from libcloud.compute.types import NodeState
 
 class Usage(Exception):
     def __init__(self, msg):
@@ -97,6 +98,11 @@ def main(argv=None):
         # Finally, reboot the node
         print 'Rebooting the node...'
         node.reboot()
+        print 'Waiting for node to reboot'
+        time.sleep(5)
+        while node.state != NodeState.RUNNING:
+            print 'Waiting for node to reboot'
+            time.sleep(5)
         print 'Done. Configuration complete.'
 
         if output_ip is not None:
