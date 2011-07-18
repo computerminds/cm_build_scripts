@@ -34,50 +34,53 @@ def dependency_check():
 # Helper script to generate a random password
 def gen_passwd(N=8):
     return ''.join(random.choice(string.ascii_letters + string.digits) for x in range(N))
-    
+
 # Return a connection to our chosen Provider.
 def get_connection():
     Driver = get_driver(getattr(Provider, provider_driver))
     conn = Driver(user, key)
     return conn
-  
+
 def get_images():
     conn = get_connection()
     return conn.list_images()
-    
+
 def get_sizes():
     conn = get_connection()
     return conn.list_sizes()
-    
+
 def create_server(selected_image, selected_size, node_name=None):
     if node_name is None:
         node_name = 'CM Mercury ' + str(time.time())
     images = get_images();
     sizes = get_sizes();
-    
+
     # We'll use the distro and size from the config ini
     preferred_image = [image for image in images if selected_image in image.name]
+
+    print preferred_image
     assert len(preferred_image) == 1, "We found more than one image for %s, will be assuming the first one" % selected_image
 
+
+
     preferred_size = [size for size in sizes if selected_size in size.name]
-    
+
     dispatch = [
         SSHKeyDeployment(open(os.path.expanduser("~/.ssh/id_rsa.pub")).read()),
     ]
     msd = MultiStepDeployment(dispatch)
-    
+
     conn = get_connection()
     node = conn.deploy_node(name=node_name,image=preferred_image[0], size=preferred_size[0], deploy=msd)
-    
+
     return node
 
 def fabric_setup(node, user='root'):
     domain = socket.getfqdn(node.public_ip[0])
     fabric.env.host_string = domain
     fabric.env.user = user
-    
+
 def fabric_setup_ip(ip, user='root'):
     domain = socket.getfqdn(ip)
     fabric.env.host_string = domain
     fabric.env.user = user
-
