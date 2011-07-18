@@ -19,7 +19,7 @@ if __name__ == "__main__":
     if output_ip is not None:
             with open(output_ip, 'r') as f:
                 ip = f.read
-                args.append("--ip=" + ip)
+                args.append("--ip=%s" % (ip))
 
     sys.exit(aegir_slave.main(args))
 
