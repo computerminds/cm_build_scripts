@@ -8,13 +8,13 @@ import os, sys
 if __name__ == "__main__":
     args = [
         'dummy',
-        "--size='" + os.environ['CM_SIZE'] + "'",
-        "--image='" + os.environ['CM_IMAGE'] + "'",
-        "--enable_apache='" + os.environ['CM_ENABLE_APACHE'] + "'",
-        "--enable_mysql='" + os.environ['CM_ENABLE_MYSQL'] + "'",
-        "--enable_jenkins='" + os.environ['CM_ENABLE_JENKINS'] + "'",
-        "--enable_memcache='" + os.environ['CM_ENABLE_MEMCACHE'] + "'",
-        "--enable_tomcat='" + os.environ['CM_ENABLE_TOMCAT'] + "'",
+        "--size=" + os.environ['CM_SIZE'] + "",
+        "--image=" + os.environ['CM_IMAGE'] + "",
+        "--enable_apache=" + os.environ['CM_ENABLE_APACHE'] + "",
+        "--enable_mysql=" + os.environ['CM_ENABLE_MYSQL'] + "",
+        "--enable_jenkins=" + os.environ['CM_ENABLE_JENKINS'] + "",
+        "--enable_memcache=" + os.environ['CM_ENABLE_MEMCACHE'] + "",
+        "--enable_tomcat=" + os.environ['CM_ENABLE_TOMCAT'] + "",
     ]
     sys.exit(create_server.main(args))
 
