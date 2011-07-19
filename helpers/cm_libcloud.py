@@ -74,6 +74,15 @@ def create_server(selected_image, selected_size, node_name=None):
 
     return node
 
+def reboot_node(node):
+    # Reboot the node
+    if node.reboot():
+        # Now wait for it to come back up
+        node.driver._wait_until_running()
+        return True
+    else:
+        return False
+
 def fabric_setup(node, user='root'):
     domain = socket.getfqdn(node.public_ip[0])
     fabric.env.host_string = domain
