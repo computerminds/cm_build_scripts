@@ -78,7 +78,7 @@ def reboot_node(node):
     # Reboot the node
     if node.reboot():
         # Now wait for it to come back up
-        node.driver._wait_until_running()
+        node.driver._wait_until_running(node=node, wait_period=3,timeout=600)
         return True
     else:
         return False
