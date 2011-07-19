@@ -78,22 +78,22 @@ def main(argv=None):
         node = create_server(image, size)
 
         # Use Fabric to install mercury
-        install_mercury(node)
+        #install_mercury(node)
 
         # Ensure that the correct services are present
         if enable_apache is False:
-            disable_apache(node)
+            pass#disable_apache(node)
         if enable_mysql is False:
-            disable_mysql(node)
+            pass#disable_mysql(node)
         if enable_jenkins is False:
-            disable_jenkins(node)
+            pass#disable_jenkins(node)
         if enable_memcache is False:
-            disable_memcache(node)
+            pass#disable_memcache(node)
         if enable_tomcat is False:
-            disable_tomcat(node)
+            pass#disable_tomcat(node)
 
         # Disable mercury
-        disable_mercury(node)
+        #disable_mercury(node)
 
         # Finally, reboot the node
         print 'Rebooting the node...'
