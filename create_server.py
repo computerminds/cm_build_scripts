@@ -75,7 +75,8 @@ def main(argv=None):
             raise Usage, "the --image option must be specified"
 
         # Create a server with the specified image and size
-        print 'Creating the server...this may take a minute or two'
+        print 'Creating the server. This may take a minute or two...'
+        print ""
         node = cm_libcloud.create_server(image, size)
         
         print_node_details(node)
