@@ -75,7 +75,10 @@ def main(argv=None):
             raise Usage, "the --image option must be specified"
 
         # Create a server with the specified image and size
-        node = create_server(image, size)
+        print 'Creating the server...this may take a minute or two'
+        node = cm_libcloud.create_server(image, size)
+        
+        print_node_details(node)
 
         # Use Fabric to install mercury
         install_mercury(node)
@@ -99,6 +102,8 @@ def main(argv=None):
         print 'Rebooting the node...'
         cm_libcloud.reboot_node(node)
         print 'done'
+        
+        print_node_details(node)
 
         if output_ip is not None:
             with open(output_ip, 'w') as f:
@@ -111,14 +116,23 @@ def main(argv=None):
         print >>sys.stderr, "for help use --help"
         return 2
 
-def create_server(image, size):
-    print "Provisioning server..."
-    node = cm_libcloud.create_server(image, size)
-    print "Provisioning complete, you can ssh as root to %s" % node.public_ip[0]
+def print_node_details(node):
+    print ""
+    print "-----------------------------------------------------------"
+    print ""
+    print "Server details:"
+    print ""
+    print "Public IP: %s" % node.public_ip[0]
+    print ""
     if node.extra.get('password'):
-        print "The root user's password is %s" % node.extra.get('password')
-
-    return node
+        print "Root user password: %s" % node.extra.get('password')
+        print ""
+    print "SSH connection string:"
+    print "ssh root@%s" % node.public_ip[0]
+    print ""
+    print "-----------------------------------------------------------"
+    print ""
+    
 
 def install_mercury(node):
     cm_libcloud.fabric_setup(node)
