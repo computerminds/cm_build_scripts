@@ -9,6 +9,7 @@ function cm_build_scripts_drush_command() {
   $items['cm-build-scripts-list-servers'] = array(
     'description' => 'Lists Aegir servers',
     'bootstrap' =>  DRUSH_BOOTSTRAP_DRUPAL_FULL,
+    'drupal dependencies' => array('hosting_server'),
   );
   
   return $items;
