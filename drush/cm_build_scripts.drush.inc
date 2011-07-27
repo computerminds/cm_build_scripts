@@ -19,7 +19,7 @@ function cm_build_scripts_drush_command() {
  *  Implements drush_command_hook_validate().
  */
 function drush_cm_build_scripts_list_servers_validate($service = '') {
-  if (!empty($service)) {
+  if (empty($service)) {
     return drush_set_error('CM_BUILD_SCRIPTS_SERVICE_NOT_SPECIFIED');
   }
 }
