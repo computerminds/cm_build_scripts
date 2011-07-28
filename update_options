@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 from helpers import cm_libcloud
-import sys, os
+import sys, os, ConfigParser
 
 def main():
     cm_libcloud.dependency_check()
@@ -21,6 +21,16 @@ def main():
             for size in cm_libcloud.get_sizes():
                 size_names.append(size.name)
             f.write('sizes=' + ','.join(size_names) + '\n')
+            
+            # Fetch some values from the config file
+            config = ConfigParser.RawConfigParser()
+            config.read(os.path.expanduser('~/config/cm_build_scripts.ini'))
+            
+            clients = []
+            for section in config.sections():
+                if not section.startswith('Rackspace_'):
+                    clients.append(section)
+            f.write('clients=' + ','.join(clients) + '\n')    
             
             print 'Wrote: ', os.path.expanduser('~/config/rackspace_options')
         f.close()
