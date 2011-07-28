@@ -1,3 +1,4 @@
+
 from libcloud.compute.types import Provider
 from libcloud.compute.providers import get_driver
 from libcloud.compute.deployment import MultiStepDeployment, ScriptDeployment, SSHKeyDeployment
@@ -16,7 +17,13 @@ config.read(os.path.expanduser('~/config/cm_build_scripts.ini'))
 # Try to abstract the provider here, as we may end up supporting others
 # Theoretically since we are using libcloud, it should support any
 # provider that supports the deploy_node function (Amazon EC2 doesn't)
-provider = config.get('CM_server', 'provider')
+if 'CM_RACKSPACE_CLIENT' in os.environ:
+    client = os.environ['CM_RACKSPACE_CLIENT']
+else:
+    # Fallback to us as a default.
+    client = 'Computerminds'
+
+provider = config.get(client, 'provider')
 provider_driver = config.get(provider, 'driver')
 
 # API credentials
