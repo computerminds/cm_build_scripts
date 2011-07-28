@@ -92,6 +92,7 @@ def setup_base_slave(ip):
     #fabric.run("", pty=True)
     fabric.run("mkdir /var/aegir/.ssh", pty=True)
     fabric.run("touch /var/aegir/.ssh/authorized_keys", pty=True)
+    # TODO: get this key from the master server, instead of hard coding the CM one.
     fabric.run("echo 'ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAy+rElNLeCyJ9qW1eKqgpIN+N09MYOUiGIPIyrC/qvCIDIZwbFGDxVe7D4x71HGu3tMYzp1jk69Iiqy7z/DjTb6ep0iXp8zwmrfgVf7n2XsnVIT57GZsb0JYJ3bO8UJZghLPTe1f05WjSvWNoL1N6pdtt2NHuLEC5FNZm4eo/xiYueAVM8wTalQnD0PTSpH03b0Wr+VcHJt+Chlf2BfU/CTn87q3yErotBOmgVJjo9t3Y+dZW1tISC/b1aFqRccYcQCc4sK6l98j9WE19xMT0wMKeRB4B37oZ+igOPBcY1K7AZ/8BSIUSP/YgJZYhYbsFW9zgDgv2qVcX5OwWRdh0YQ== aegir@li184-53' >> /var/aegir/.ssh/authorized_keys", pty=True)
     fabric.run("chown -R aegir:aegir /var/aegir/.ssh", pty=True)
     fabric.run("chmod 644 /var/aegir/.ssh/authorized_keys", pty=True)
