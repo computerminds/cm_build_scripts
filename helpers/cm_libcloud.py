@@ -58,7 +58,7 @@ def get_sizes():
 
 def create_server(selected_image, selected_size, node_name=None):
     if node_name is None:
-        node_name = 'CM Mercury ' + str(time.time())
+        node_name = 'CM Mercury ' + str(int(time.time()))
     images = get_images();
     sizes = get_sizes();
 
