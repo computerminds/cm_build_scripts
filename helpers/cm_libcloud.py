@@ -20,7 +20,7 @@ if 'CM_RACKSPACE_CLIENT' in os.environ:
     client = os.environ['CM_RACKSPACE_CLIENT']
 else:
     # Fallback to us as a default.
-    client = 'Computerminds'
+    client = 'aesopagency'
 
 provider = config.get(client, 'provider')
 provider_driver = config.get(provider, 'driver')
