@@ -1,4 +1,3 @@
-
 from libcloud.compute.types import Provider
 from libcloud.compute.providers import get_driver
 from libcloud.compute.deployment import MultiStepDeployment, ScriptDeployment, SSHKeyDeployment
@@ -64,6 +63,10 @@ def create_server(selected_image, selected_size, node_name=None):
 
     # We'll use the distro and size from the config ini
     preferred_image = [image for image in images if selected_image in image.name]
+    
+    print preferred_image
+    
+    print preferred_image
 
     assert len(preferred_image) == 1, "We found more than one image for %s, will be assuming the first one" % selected_image
 
