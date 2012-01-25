@@ -88,6 +88,11 @@ def reboot_node(node):
         return True
     else:
         return False
+    
+def destroy_node(node):
+    # Destroy the node
+    conn = get_connection()
+    conn.destroy_node(node)
 
 def fabric_setup(node, user='root'):
     domain = socket.getfqdn(node.public_ip[0])
