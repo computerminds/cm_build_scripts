@@ -6,6 +6,7 @@ Valid options:
   --size - The size of the machine to create (required)
   --image - The image to use for the machine (required)
   --branch
+  --update_branch
   --output_ip
   --help - Print this help
 """
@@ -24,13 +25,14 @@ def main(argv=None):
         argv = sys.argv
     try:
         try:
-            opts, args = getopt.getopt(argv[1:], "h", ["help", "size=", "image=", "output_ip=", 'branch='])
+            opts, args = getopt.getopt(argv[1:], "h", ["help", "size=", "image=", "output_ip=", 'branch=', 'update_branch='])
         except getopt.error, msg:
              raise Usage(msg)
         # process options
         size = None
         image = None
-        branch = 'master'
+        branch = 'stable'
+        update_branch = 'master'
         output_ip = None
 
         for o, a in opts:
@@ -45,6 +47,8 @@ def main(argv=None):
                 output_ip = a
             if o in ("--branch"):
                 branch = a
+            if o in ("--update_branch"):
+                update_branch = a
 
 
         # Check the command line options
@@ -55,19 +59,22 @@ def main(argv=None):
         
         try:
             # Create a server with the specified image and size
-            print 'Creating the server. This may take a minute or two...'
+            print '===> Creating the server. This may take a minute or two...'
             print ""
             node = cm_libcloud.create_server(image, size)
             
             print_node_details(node)
     
-            # Use Fabric to install mercury
+            # Use Fabric to install pergola
             install_pergola(node, branch)
+            
+            # Use Fabric to update pergola
+            update_pergola(node, update_branch)
     
             # Finally, reboot the node
-            print 'Rebooting the node...'
+            print '===> Rebooting the node...'
             cm_libcloud.reboot_node(node)
-            print 'done'
+            print '===> done'
             
             print_node_details(node)
     
@@ -110,13 +117,30 @@ def print_node_details(node):
 def install_pergola(node, branch):
     cm_libcloud.fabric_setup(node)
 
+    fabric.run("apt-get update", pty=True)
+    
+    print '===> Installing git'
+    fabric.run("apt-get install git-core -y", pty=True)
+
+    print '===> Installing Pergola'
+    fabric.run("apt-get install git-core -y", pty=True)
+    fabric.run("git clone git://github.com/computerminds/pergola.git -b %s /opt/pergola" % (branch), pty=True)
+
     # Need to preseed some options for postfix
     fabric.run("echo 'postfix postfix/main_mailer_type select Internet Site' | debconf-set-selections", pty=True)
     fabric.run("echo 'postfix postfix/mailname string $HOSTNAME' | debconf-set-selections", pty=True)
     fabric.run("echo 'postfix postfix/destinations string localhost.localdomain, localhost' | debconf-set-selections", pty=True)
-    
-    fabric.run("wget --no-check-certificate https://github.com/computerminds/pergola/raw/%s/tools/install.sh -qO - | sh" % (branch), pty=True)
 
+
+    with fabric.cd('/opt/pergola'):
+        fabric.run("python setup.py", pty=True)
+
+def update_pergola(node, branch):
+    print '===> Updating Pergola to branch %s' % (branch)
+    
+    with fabric.cd('/opt/pergola'):
+        fabric.run("git checkout %s" % (branch), pty=True)
+        fabric.run("python update.py")
 
 def disable_apache(node):
     _disable_initd(node, ["apache2"])
