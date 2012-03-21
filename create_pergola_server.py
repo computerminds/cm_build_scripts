@@ -110,23 +110,13 @@ def print_node_details(node):
 def install_pergola(node, branch):
     cm_libcloud.fabric_setup(node)
 
-    fabric.run("apt-get update", pty=True)
-    
-    print 'Installing git'
-    fabric.run("apt-get install git-core -y", pty=True)
-
-    print 'Installing Pergola'
-    fabric.run("apt-get install git-core -y", pty=True)
-    fabric.run("git clone git://github.com/computerminds/pergola.git -b %s /opt/pergola" % (branch), pty=True)
-
     # Need to preseed some options for postfix
     fabric.run("echo 'postfix postfix/main_mailer_type select Internet Site' | debconf-set-selections", pty=True)
     fabric.run("echo 'postfix postfix/mailname string $HOSTNAME' | debconf-set-selections", pty=True)
     fabric.run("echo 'postfix postfix/destinations string localhost.localdomain, localhost' | debconf-set-selections", pty=True)
+    
+    fabric.run("wget --no-check-certificate https://github.com/computerminds/pergola/raw/%s/tools/install.sh -qO - | sh" % (branch), pty=True)
 
-
-    with fabric.cd('/opt/pergola'):
-        fabric.run("python setup.py", pty=True)
 
 def disable_apache(node):
     _disable_initd(node, ["apache2"])
