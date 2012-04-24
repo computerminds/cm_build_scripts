@@ -110,7 +110,8 @@ def update_redmine(db_password = None, redmine_host = None, release_tag = None):
 
     logger('Setting the new version of Redmine')
     with fabric.cd("/var/www/support"):
-        fabric.run("ln -sf redmine-%s/ redmine" % (release_tag), pty=True)
+        fabric.run("rm redmine", pty=True)
+        fabric.run("ln -s redmine-%s/ redmine" % (release_tag), pty=True)
 
 
     logger('Restarting thin')
