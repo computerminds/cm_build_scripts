@@ -84,7 +84,7 @@ def update_redmine(db_password = None, redmine_host = None, release_tag = None):
     fabric.run("cp /var/www/support/redmine/config/environments/production_sync.rb /var/www/support/redmine-%s/config/environments/production_sync.rb" % (release_tag), pty=True)
 
     logger('Copying files')
-    fabric.run("rsync -aH /var/www/support/redmine/files /var/www/support/redmine-%s/files/" % (release_tag), pty=True)
+    fabric.run("rsync -aH /var/www/support/redmine/files /var/www/support/redmine-%s/" % (release_tag), pty=True)
 
     logger('Restarting thin')
     fabric.run("/etc/init.d/thin restart", pty=True)
