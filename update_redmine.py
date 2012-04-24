@@ -38,8 +38,8 @@ def main(argv=None):
                 db_password = a
             if o in ("--redmine_host"):
                 redmine_host = a
-            if o in ("--download_url"):
-                download_url = a
+            if o in ("--release_tag"):
+                release_tag = a
 
         if db_password is None:
             raise Usage, "the --db_password option must be specified"
