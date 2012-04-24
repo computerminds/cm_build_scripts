@@ -68,7 +68,7 @@ def update_redmine(db_password = None, redmine_host = None, release_tag = None):
     fabric.env.user = 'root'
 
     logger('Stopping apache server')
-    fabric.run("/etc/init.d/apache2 stop", pty=True)
+    # fabric.run("/etc/init.d/apache2 stop", pty=True)
 
     logger('Backing up MySQL')
     today = datetime.date.today()
