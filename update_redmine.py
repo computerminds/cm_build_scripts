@@ -76,7 +76,7 @@ def update_redmine(db_password = None, redmine_host = None, release_tag = None):
 
     logger('Downloading Redmine')
     fabric.local("git clone git://github.com/redmine/redmine.git redmine-%s && cd redmine-%s && git checkout %s && cd .." % (release_tag, release_tag, release_tag))
-    with cd("/var/www/support/redmine-%s" % (release_tag)):
+    with fabric.cd("/var/www/support/redmine-%s" % (release_tag)):
         fabric.put("redmine-%s/*" % (release_tag), "")
 
     logger('Restarting thin')
