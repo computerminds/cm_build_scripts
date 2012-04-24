@@ -75,7 +75,9 @@ def update_redmine(db_password = None, redmine_host = None, release_tag = None):
     fabric.run("mysqldump -u redmine -p%s redmine | gzip > /tmp/redmine_%s.gz" % (db_password, today.strftime('%Y-%m-%d')), pty=True)
 
     logger('Downloading Redmine')
-    fabric.run("cd /var/www/support && git clone git://github.com/redmine/redmine.git redmine-%s && cd redmine-%s && git checkout %s" % (release_tag, release_tag, release_tag), pty=True)
+    fabric.local("git clone git://github.com/redmine/redmine.git redmine-%s && cd redmine-%s && git checkout %s && cd .." % (release_tag, release_tag, release_tag))
+    with cd("/var/www/support/redmine-%s" % (release_tag)):
+        fabric.put("redmine-%s/*" % (release_tag), "")
 
     logger('Restarting thin')
     fabric.run("/etc/init.d/thin restart", pty=True)
