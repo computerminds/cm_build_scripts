@@ -75,9 +75,16 @@ def update_redmine(db_password = None, redmine_host = None, release_tag = None):
     fabric.run("mysqldump -u redmine -p%s redmine | gzip > /tmp/redmine_%s.gz" % (db_password, today.strftime('%Y-%m-%d')), pty=True)
 
     logger('Downloading Redmine')
-    fabric.local("rm -rf redmine && git clone git://github.com/redmine/redmine.git redmine && cd redmine && git checkout %s && cd .." % (release_tag))
-    with fabric.cd("/var/www/support"):
-        fabric.put("redmine", "redmine-%s" % (release_tag))
+    fabric.run("cd /var/www/support && git clone git://github.com/redmine/redmine.git redmine-%s && cd redmine-%s && git checkout %s" % (release_tag, release_tag, release_tag), pty=True)
+
+
+    logger('Copying config')
+    fabric.run("cp /var/www/support/redmine/config/database.yml /var/www/support/redmine-%s/config/database.yml" % (release_tag), pty=True)
+    fabric.run("cp /var/www/support/redmine/config/configuration.yml /var/www/support/redmine-%s/config/configuration.yml" % (release_tag), pty=True)
+    fabric.run("cp /var/www/support/redmine/config/environments/production_sync.rb /var/www/support/redmine-%s/config/environments/production_sync.rb" % (release_tag), pty=True)
+
+    logger('Copying files')
+    fabric.run("rsync -aH /var/www/support/redmine/files /var/www/support/redmine-%s/files/" % (release_tag), pty=True)
 
     logger('Restarting thin')
     fabric.run("/etc/init.d/thin restart", pty=True)
