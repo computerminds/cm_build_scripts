@@ -94,7 +94,7 @@ def update_redmine(db_password = None, redmine_host = None, release_tag = None):
 
     with fabric.cd("/var/www/support/redmine-%s" % (release_tag)):
         logger('Running Redmine bundler')
-        fabric.run("bundle install --without development test rmagick", pty=True)
+        fabric.run("bundle install --without development test rmagick postgresql", pty=True)
 
         logger('Running Redmine migration')
         fabric.run("rake generate_session_store", pty=True)
