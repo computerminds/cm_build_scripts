@@ -68,8 +68,8 @@ def update_redmine(db_password = None, redmine_host = None, release_tag = None):
     fabric.env.user = 'root'
 
     logger('Downloading Redmine')
-    fabric.local("rm -rf redmine && git clone git://github.com/redmine/redmine.git redmine && cd redmine && git checkout %s && cd .." % (release_tag), capture=True)
-    fabric.local("rsync -Pvr redmine/ root@%s:/var/www/support/redmine-%s" % (redmine_host, release_tag), capture=True)
+    fabric.local("rm -rf redmine-%s && git clone git://github.com/redmine/redmine.git redmine-%s && cd redmine-%s && git checkout %s && cd .." % (release_tag, release_tag, release_tag, release_tag), capture=True)
+    fabric.local("rsync -Pvr redmine-%s root@%s:/var/www/support/" % (release_tag, redmine_host), capture=True)
 
     logger('Stopping apache server')
     fabric.run("/etc/init.d/apache2 stop", pty=True)
