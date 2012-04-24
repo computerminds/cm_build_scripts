@@ -86,6 +86,29 @@ def update_redmine(db_password = None, redmine_host = None, release_tag = None):
     logger('Copying files')
     fabric.run("rsync -aH /var/www/support/redmine/files /var/www/support/redmine-%s/" % (release_tag), pty=True)
 
+    logger('Copying custom plugins')
+    fabric.run("rsync -aH /var/www/support/redmine/vendor/plugins/action_mailer_optional_tls /var/www/support/redmine-%s/vendor/plugins/" % (release_tag), pty=True)
+
+    logger('Copying custom themes')
+    fabric.run("rsync -aH /var/www/support/redmine/public/themes/modula-mojito /var/www/support/redmine-%s/public/themes/" % (release_tag), pty=True)
+
+    #logger('Running Redmine migration')
+    #with fabric.cd("/var/www/support/redmine-%s" % (release_tag)):
+    #    fabric.run("rake generate_session_store", pty=True)
+    #
+    #    fabric.run("rake db:migrate RAILS_ENV=production", pty=True)
+    #
+    #    fabric.run("rake db:migrate_plugins RAILS_ENV=production", pty=True)
+    #
+    #    logger('Cleaning up')
+    #    fabric.run("rake tmp:cache:clear", pty=True)
+    #    fabric.run("rake tmp:sessions:clear", pty=True)
+    #
+    #logger('Setting the new version of Redmine')
+    #with fabric.cd("/var/www/support"):
+    #    fabric.run("ln -sf redmine-%s/ redmine" % (release_tag), pty=True)
+
+
     logger('Restarting thin')
     fabric.run("/etc/init.d/thin restart", pty=True)
 
