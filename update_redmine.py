@@ -69,7 +69,7 @@ def update_redmine(db_password = None, redmine_host = None, release_tag = None):
 
     logger('Downloading Redmine')
     fabric.run("cd /var/www/support && git clone git://github.com/redmine/redmine.git redmine-%s && cd redmine-%s && git checkout %s" % (release_tag, release_tag, release_tag), pty=True)
-    
+
     logger('Stopping apache server')
     fabric.run("/etc/init.d/apache2 stop", pty=True)
 
@@ -92,8 +92,11 @@ def update_redmine(db_password = None, redmine_host = None, release_tag = None):
     logger('Copying custom themes')
     fabric.run("rsync -aH /var/www/support/redmine/public/themes/modula-mojito /var/www/support/redmine-%s/public/themes/" % (release_tag), pty=True)
 
-    logger('Running Redmine migration')
     with fabric.cd("/var/www/support/redmine-%s" % (release_tag)):
+        logger('Running Redmine bundler')
+        fabric.run("bundle install --without development test rmagick", pty=True)
+
+        logger('Running Redmine migration')
         fabric.run("rake generate_session_store", pty=True)
 
         fabric.run("rake db:migrate RAILS_ENV=production", pty=True)
