@@ -72,10 +72,10 @@ def update_redmine(db_password = None, redmine_host = None, release_tag = None):
 
     logger('Backing up MySQL')
     today = datetime.date.today()
-    fabric.run("mysqldump -u redmine -p%s redmine | gzip > /tmp/redmine_%s.gz" % (db_password, today.strftime('%Y-%m-%d-%H%M')), pty=True)
+    fabric.run("mysqldump -u redmine -p%s redmine | gzip > /tmp/redmine_%s.gz" % (db_password, today.strftime('%Y-%m-%d')), pty=True)
 
     logger('Downloading Redmine')
-    fabric.run("cd /var/www/support && git clone https://github.com/redmine/redmine.git redmine-%s && cd redmine-%s && git checkout %s" % (release_tag, release_tag, release_tag), pty=True)
+    fabric.run("cd /var/www/support && git clone git://github.com/redmine/redmine.git redmine-%s && cd redmine-%s && git checkout %s" % (release_tag, release_tag, release_tag), pty=True)
 
     logger('Restarting thin')
     fabric.run("/etc/init.d/thin restart", pty=True)
