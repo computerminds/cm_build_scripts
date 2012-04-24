@@ -70,7 +70,8 @@ def update_redmine(db_password = None, redmine_host = None, release_tag = None):
     fabric.run("/etc/init.d/apache2 stop", pty=True)
 
     logger('Backing up MySQL')
-    fabric.run("mysql -u root -p%s redmine | gzip > /tmp/redmine_`date +%y_%m_%d`.gz" % (db_password), pty=True)
+    today = datetime.date.today()
+    fabric.run("mysql -u root -p%s redmine | gzip > /tmp/redmine_%s.gz" % (db_password, today.strftime('%Y-%m-%d')), pty=True)
 
     logger('Downloading Redmine')
     fabric.run("cd /var/www/support && git clone https://github.com/redmine/redmine.git redmine-%s && cd redmine-%s && git checkout %s" % (release_tag, release_tag, release_tag), pty=True)
