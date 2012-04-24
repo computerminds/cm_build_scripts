@@ -67,7 +67,7 @@ def update_redmine(db_password = None, redmine_host = None, release_tag = None):
     fabric.env.user = 'root'
 
     logger('Stopping apache server')
-    fabric.run("/etc/init.d/apache stop", pty=True)
+    fabric.run("/etc/init.d/apache2 stop", pty=True)
 
     logger('Backing up MySQL')
     fabric.run("mysql -u root -p%s redmine | gzip > /tmp/redmine_`date +%y_%m_%d`.gz" % (), pty=True)
@@ -79,7 +79,7 @@ def update_redmine(db_password = None, redmine_host = None, release_tag = None):
     fabric.run("/etc/init.d/thin restart", pty=True)
 
     logger('Starting apache server')
-    fabric.run("/etc/init.d/apache start", pty=True)
+    fabric.run("/etc/init.d/apache2 start", pty=True)
 
 
 if __name__ == "__main__":
