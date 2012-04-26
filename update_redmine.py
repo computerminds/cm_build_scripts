@@ -89,6 +89,7 @@ def update_redmine(db_password = None, redmine_host = None, release_tag = None):
 
     logger('Copying custom plugins')
     fabric.run("rsync -aH /var/www/support/redmine/vendor/plugins/action_mailer_optional_tls /var/www/support/redmine-%s/vendor/plugins/" % (release_tag), pty=True)
+    fabric.run("rsync -aH /var/www/support/redmine/vendor/plugins/redmine-openid-selector /var/www/support/redmine-%s/vendor/plugins/" % (release_tag), pty=True)
 
     logger('Copying custom themes')
     fabric.run("rsync -aH /var/www/support/redmine/public/themes/modula-mojito /var/www/support/redmine-%s/public/themes/" % (release_tag), pty=True)
