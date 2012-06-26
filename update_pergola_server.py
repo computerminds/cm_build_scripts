@@ -139,6 +139,7 @@ def update_pergola(node, branch):
     print '===> Updating Pergola to branch %s' % (branch)
     
     with fabric.cd('/opt/pergola'):
+        fabric.run("rm -rf /opt/pergola/*", pty=True)
         fabric.run("git checkout %s" % (branch), pty=True)
         fabric.run("python update.py")
 
