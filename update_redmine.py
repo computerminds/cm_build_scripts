@@ -13,6 +13,7 @@ Valid options:
 import sys, getopt
 import fabric.api as fabric
 import datetime
+from time import sleep
 
 class Usage(Exception):
     def __init__(self, msg):
@@ -121,6 +122,7 @@ def update_redmine(db_password = None, redmine_host = None, release_tag = None):
     logger('Starting apache server')
     fabric.run("/etc/init.d/apache2 start", pty=True)
     
+    sleep(15)
     logger('Restarting apache server')
     fabric.run("/etc/init.d/apache2 restart", pty=True)
 
