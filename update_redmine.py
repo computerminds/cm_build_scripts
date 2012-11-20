@@ -69,7 +69,7 @@ def update_redmine(db_password = None, redmine_host = None, release_tag = None):
     fabric.env.user = 'root'
 
     logger('Downloading Redmine')
-    fabric.run("cd /var/www && git clone git://github.com/computerminds/redmine.git redmine-%s && cd redmine-%s && git checkout %s && cd .." % (release_tag, release_tag, release_tag), pty=True)
+    fabric.run("cd /var/www && git clone git@github.com:computerminds/redmine.git redmine-%s && cd redmine-%s && git checkout %s && cd .." % (release_tag, release_tag, release_tag), pty=True)
 
     logger('Stopping nginx server')
     fabric.run("service nginx stop", pty=True)
