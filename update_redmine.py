@@ -69,33 +69,22 @@ def update_redmine(db_password = None, redmine_host = None, release_tag = None):
     fabric.env.user = 'root'
 
     logger('Downloading Redmine')
-    fabric.local("rm -rf redmine-%s && git clone git://github.com/redmine/redmine.git redmine-%s && cd redmine-%s && git checkout %s && cd .." % (release_tag, release_tag, release_tag, release_tag), capture=True)
-    fabric.local("rsync -Pvr redmine-%s root@%s:/var/www/support/" % (release_tag, redmine_host), capture=True)
+    fabric.run("cd /var/www && git clone git://github.com/computerminds/redmine.git redmine-%s && cd redmine-%s && git checkout %s && cd .." % (release_tag, release_tag, release_tag), capture=True)
 
-    logger('Stopping apache server')
-    fabric.run("/etc/init.d/apache2 stop", pty=True)
+    logger('Stopping nginx server')
+    fabric.run("service nginx stop", pty=True)
+    
+    logger('Stopping thin')
+    fabric.run("service thin stop", pty=True)
 
     logger('Backing up MySQL')
     today = datetime.date.today()
-    fabric.run("mysqldump -u redmine -p%s redmine | gzip > /tmp/redmine_%s.gz" % (db_password, today.strftime('%Y-%m-%d')), pty=True)
-
-
-    logger('Copying config')
-    fabric.run("cp /var/www/support/redmine/config/database.yml /var/www/support/redmine-%s/config/database.yml" % (release_tag), pty=True)
-    fabric.run("cp /var/www/support/redmine/config/configuration.yml /var/www/support/redmine-%s/config/configuration.yml" % (release_tag), pty=True)
-    fabric.run("cp /var/www/support/redmine/config/environments/production_sync.rb /var/www/support/redmine-%s/config/environments/production_sync.rb" % (release_tag), pty=True)
+    fabric.run("mysqldump -u root -p%s supportcomp | gzip > /tmp/redmine_%s.gz" % (db_password, today.strftime('%Y-%m-%d')), pty=True)
 
     logger('Copying files')
-    fabric.run("rsync -aH /var/www/support/redmine/files /var/www/support/redmine-%s/" % (release_tag), pty=True)
+    fabric.run("rsync -aH /var/www/redmine/files /var/www/redmine-%s/" % (release_tag), pty=True)
 
-    logger('Copying custom plugins')
-    fabric.run("rsync -aH /var/www/support/redmine/vendor/plugins/action_mailer_optional_tls /var/www/support/redmine-%s/vendor/plugins/" % (release_tag), pty=True)
-    fabric.run("rsync -aH /var/www/support/redmine/vendor/plugins/redmine-openid-selector /var/www/support/redmine-%s/vendor/plugins/" % (release_tag), pty=True)
-
-    logger('Copying custom themes')
-    fabric.run("rsync -aH /var/www/support/redmine/public/themes/modula-mojito /var/www/support/redmine-%s/public/themes/" % (release_tag), pty=True)
-
-    with fabric.cd("/var/www/support/redmine-%s" % (release_tag)):
+    with fabric.cd("/var/www/redmine-%s" % (release_tag)):
         logger('Running Redmine bundler')
         fabric.run("bundle install --without development test rmagick postgresql sqlite", pty=True)
 
@@ -111,20 +100,19 @@ def update_redmine(db_password = None, redmine_host = None, release_tag = None):
         fabric.run("rake tmp:sessions:clear", pty=True)
 
     logger('Setting the new version of Redmine')
-    with fabric.cd("/var/www/support"):
+    with fabric.cd("/var/www"):
         fabric.run("rm redmine", pty=True)
         fabric.run("ln -s redmine-%s/ redmine" % (release_tag), pty=True)
 
 
-    logger('Restarting thin')
-    fabric.run("/etc/init.d/thin restart", pty=True)
-
-    logger('Starting apache server')
-    fabric.run("/etc/init.d/apache2 start", pty=True)
+    logger('Starting thin')
+    fabric.run("service thin start", pty=True)
     
+    logger('Waiting for thin to bootstrap Redmine...')
     sleep(15)
-    logger('Restarting apache server')
-    fabric.run("/etc/init.d/apache2 restart", pty=True)
+
+    logger('Stopping nginx server')
+    fabric.run("service nginx start", pty=True)
 
 
 if __name__ == "__main__":
