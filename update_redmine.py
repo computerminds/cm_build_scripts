@@ -82,6 +82,7 @@ def update_redmine(db_password = None, redmine_host = None, release_tag = None):
     fabric.run("mysqldump -u root -p%s supportcomp | gzip > /tmp/redmine_%s.gz" % (db_password, today.strftime('%Y-%m-%d')), pty=True)
 
     logger('Copying files')
+    fabric.run("rm -f /var/www/redmine-%s/delete.me" % (release_tag), pty=True)
     fabric.run("cp -al /var/www/redmine/files /var/www/redmine-%s/" % (release_tag), pty=True)
 
     with fabric.cd("/var/www/redmine-%s" % (release_tag)):
