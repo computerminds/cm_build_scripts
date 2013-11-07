@@ -1,5 +1,7 @@
 #!/bin/sh -ex
 
+# curl -L https://raw.github.com/computerminds/cm_build_scripts/master/install-puppet.sh | bash
+
 # Add the puppet repo.
 
 wget http://apt.puppetlabs.com/puppetlabs-release-precise.deb
