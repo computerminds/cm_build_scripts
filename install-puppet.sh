@@ -1,6 +1,6 @@
 #!/bin/sh -ex
 
-# curl -L https://raw.github.com/computerminds/cm_build_scripts/master/install-puppet.sh | bash
+# curl -L https://raw.github.com/computerminds/cm_build_scripts/master/install-puppet.sh | sh
 
 # Add the puppet repo.
 
