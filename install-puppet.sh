@@ -34,6 +34,8 @@ echo "    report = true" >> /etc/puppet/puppet.conf
 echo "    pluginsync = true" >> /etc/puppet/puppet.conf
 echo "" >> /etc/puppet/puppet.conf
 
+# Enable puppet
+echo 'START=yes' >> /etc/default/puppet
 
 # Start puppet
-puppet resource service puppet ensure=running enable=true
+service puppet start
