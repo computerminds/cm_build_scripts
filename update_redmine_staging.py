@@ -68,8 +68,11 @@ def update_redmine(db_password = None, redmine_host = None, release_tag = None):
     fabric.env.host_string = redmine_host
     fabric.env.user = 'root'
 
+    today = datetime.date.today()
+    build = "redmine-staging-%s-%s" % (release_tag, today.strftime('%Y-%m-%d-%h-%M-%S'))
+
     logger('Downloading Redmine')
-    fabric.run("cd /var/www && git clone git@github.com:computerminds/redmine.git redmine-staging-%s && cd redmine-staging-%s && git checkout %s && cd .." % (release_tag, release_tag, release_tag), pty=True)
+    fabric.run("cd /var/www && git clone git@github.com:computerminds/redmine.git %s && cd %s && git checkout %s && cd .." % (build, build, release_tag), pty=True)
 
     #logger('Stopping nginx server')
     #fabric.run("service nginx stop", pty=True)
@@ -78,18 +81,17 @@ def update_redmine(db_password = None, redmine_host = None, release_tag = None):
     fabric.run("service thin-staging stop", pty=True)
 
     logger('Backing up MySQL')
-    today = datetime.date.today()
-    fabric.run("mysqldump -u root -p%s redmine_staging | gzip > /tmp/redmine_staging_%s.gz" % (db_password, today.strftime('%Y-%m-%d')), pty=True)
+    fabric.run("mysqldump -u root -p%s redmine_staging | gzip > /tmp/redmine_staging_%s.gz" % (db_password, today.strftime('%Y-%m-%d-%h-%M-%S')), pty=True)
 
     logger('Copying files')
-    fabric.run("rm -f /var/www/redmine-staging-%s/files/delete.me" % (release_tag), pty=True)
-    fabric.run("cp -al /var/www/redmine-staging/files /var/www/redmine-staging-%s/" % (release_tag), pty=True)
+    fabric.run("rm -f /var/www/%s/files/delete.me" % (build), pty=True)
+    fabric.run("cp -al /var/www/redmine-staging/files /var/www/%s/" % (build), pty=True)
 
     logger('Copying configuration')
-    fabric.run("cp -f /var/www/redmine-staging/config/database.yml /var/www/redmine-staging-%s/config/" % (release_tag), pty=True)
-    fabric.run("cp -f /var/www/redmine-staging/config/configuration.yml /var/www/redmine-staging-%s/config/" % (release_tag), pty=True)
+    fabric.run("cp -f /var/www/redmine-staging/config/database.yml /var/www/%s/config/" % (build), pty=True)
+    fabric.run("cp -f /var/www/redmine-staging/config/configuration.yml /var/www/%s/config/" % (build), pty=True)
 
-    with fabric.cd("/var/www/redmine-staging-%s" % (release_tag)):
+    with fabric.cd("/var/www/%s" % (build)):
         logger('Running Redmine bundler')
         fabric.run("bundle install --without development test rmagick postgresql sqlite", pty=True)
 
@@ -107,7 +109,7 @@ def update_redmine(db_password = None, redmine_host = None, release_tag = None):
     logger('Setting the new version of Redmine')
     with fabric.cd("/var/www"):
         fabric.run("rm redmine-staging", pty=True)
-        fabric.run("ln -s redmine-staging-%s/ redmine-staging" % (release_tag), pty=True)
+        fabric.run("ln -s %s/ redmine-staging" % (build), pty=True)
 
 
     logger('Starting thin')
