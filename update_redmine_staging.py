@@ -68,8 +68,8 @@ def update_redmine(db_password = None, redmine_host = None, release_tag = None):
     fabric.env.host_string = redmine_host
     fabric.env.user = 'root'
 
-    today = datetime.date.today()
-    build = "redmine-staging-%s-%s" % (release_tag, today.strftime('%Y-%m-%d-%h-%M-%S'))
+    today = datetime.date.now()
+    build = "redmine-staging-%s-%s" % (release_tag, today.strftime('%Y-%m-%d-%H-%M-%S'))
 
     logger('Downloading Redmine')
     fabric.run("cd /var/www && git clone git@github.com:computerminds/redmine.git %s && cd %s && git checkout %s && cd .." % (build, build, release_tag), pty=True)
