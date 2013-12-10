@@ -68,7 +68,7 @@ def update_redmine(db_password = None, redmine_host = None, release_tag = None):
     fabric.env.host_string = redmine_host
     fabric.env.user = 'root'
 
-    today = datetime.date.now()
+    today = datetime.datetime.now()
     build = "redmine-staging-%s-%s" % (release_tag, today.strftime('%Y-%m-%d-%H-%M-%S'))
 
     logger('Downloading Redmine')
