@@ -90,6 +90,7 @@ def update_redmine(db_password = None, redmine_host = None, release_tag = None):
     logger('Copying configuration')
     fabric.run("cp -f /var/www/redmine-staging/config/database.yml /var/www/%s/config/" % (build), pty=True)
     fabric.run("cp -f /var/www/redmine-staging/config/configuration.yml /var/www/%s/config/" % (build), pty=True)
+    fabric.run("cp -f /var/www/redmine-staging/config/newrelic.yml /var/www/%s/config/" % (build), pty=True)
 
     with fabric.cd("/var/www/%s" % (build)):
         logger('Running Redmine bundler')
