@@ -72,7 +72,7 @@ def update_redmine(db_password = None, redmine_host = None, release_tag = None):
     build = "redmine-staging-%s-%s" % (release_tag, today.strftime('%Y-%m-%d-%H-%M-%S'))
 
     logger('Downloading Redmine')
-    fabric.run("cd /var/www && git clone git@github.com:computerminds/redmine.git %s && cd %s && git checkout %s && cd .." % (build, build, release_tag), pty=True)
+    fabric.run("cd /var/www && git clone --reference /var/www/redmine/.git git@github.com:computerminds/redmine.git %s && cd %s && git repack -a && git checkout %s && cd .." % (build, build, release_tag), pty=True)
 
     #logger('Stopping nginx server')
     #fabric.run("service nginx stop", pty=True)
