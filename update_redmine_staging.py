@@ -97,14 +97,14 @@ def update_redmine(db_password = None, redmine_host = None, release_tag = None):
         fabric.run("bundle install --without development test rmagick postgresql sqlite", pty=True)
 
         logger('Running Redmine migration')
-        fabric.run("rake generate_secret_token", pty=True)
+        fabric.run("bundle exec rake generate_secret_token", pty=True)
 
-        fabric.run("rake db:migrate RAILS_ENV=production", pty=True)
+        fabric.run("bundle exec rake db:migrate RAILS_ENV=production", pty=True)
 
-        fabric.run("rake redmine:plugins:migrate RAILS_ENV=production", pty=True)
+        fabric.run("bundle exec rake redmine:plugins:migrate RAILS_ENV=production", pty=True)
 
         logger('Cleaning up')
-        fabric.run("rake tmp:cache:clear", pty=True)
+        fabric.run("bundle exec rake tmp:cache:clear", pty=True)
         #fabric.run("rake tmp:sessions:clear", pty=True)
 
     logger('Setting the new version of Redmine')
