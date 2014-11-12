@@ -71,8 +71,8 @@ def update_redmine(db_password = None, redmine_host = None, release_tag = None):
     logger('Downloading Redmine')
     fabric.run("cd /var/www && git clone --reference /var/www/redmine/.git git@github.com:computerminds/redmine.git redmine-%s && cd redmine-%s && git repack -a && git checkout %s && cd .." % (release_tag, release_tag, release_tag), pty=True)
 
-    logger('Stopping nginx server')
-    fabric.run("service nginx stop", pty=True)
+    #logger('Stopping nginx server')
+    #fabric.run("service nginx stop", pty=True)
     
     logger('Stopping thin')
     fabric.run("service thin stop", pty=True)
@@ -112,8 +112,8 @@ def update_redmine(db_password = None, redmine_host = None, release_tag = None):
     logger('Waiting for thin to bootstrap Redmine...')
     sleep(15)
 
-    logger('Stopping nginx server')
-    fabric.run("service nginx start", pty=True)
+    logger('Restating nginx server')
+    fabric.run("service nginx restart", pty=True)
 
 
 if __name__ == "__main__":
