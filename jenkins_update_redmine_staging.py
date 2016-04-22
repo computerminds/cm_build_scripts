@@ -10,5 +10,7 @@ if __name__ == "__main__":
         "--redmine_host=" + os.environ['REDMINE_HOST'] + "",
         "--release_tag=" + os.environ['RELEASE_TAG'] + "",
     ]
+    if os.environ['INVALIDATE_SESSIONS'] == "yes":
+        args.append("--invalidate_sessions")
     sys.exit(update_redmine_staging.main(args))
 
