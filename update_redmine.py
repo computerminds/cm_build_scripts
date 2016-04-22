@@ -8,6 +8,7 @@ Valid options:
   --db_password - The database password to use.
   --redmine_host - The Redmine server to connect to.
   --release_tag - The redmine version to checkout.
+  --invalidate_sessions - Set if you want sessions to be invalidated.
 """
 
 import sys, getopt
@@ -24,13 +25,14 @@ def main(argv=None):
         argv = sys.argv
     try:
         try:
-            opts, args = getopt.getopt(argv[1:], "h", ["help", "db_password=", "redmine_host=", "release_tag="])
+            opts, args = getopt.getopt(argv[1:], "h", ["help", "db_password=", "redmine_host=", "release_tag=", "invalidate_sessions"])
         except getopt.error, msg:
              raise Usage(msg)
         # process options
         db_password = None
         redmine_host = None
         release_tag = None
+        invalidate_sessions = False
 
         for o, a in opts:
             if o in ("-h", "--help"):
@@ -42,6 +44,8 @@ def main(argv=None):
                 redmine_host = a
             if o in ("--release_tag"):
                 release_tag = a
+            if o in ("--invalidate_sessions"):
+                invalidate_sessions = True
 
         if db_password is None:
             raise Usage, "the --db_password option must be specified"
@@ -50,7 +54,7 @@ def main(argv=None):
         if release_tag is None:
             raise Usage, "the --release_tag option must be specified"
 
-        update_redmine(db_password, redmine_host, release_tag)
+        update_redmine(db_password, redmine_host, release_tag, invalidate_sessions)
 
         return 0
 
@@ -62,7 +66,7 @@ def main(argv=None):
 def logger(message):
     print ("===> %s" % message)
 
-def update_redmine(db_password = None, redmine_host = None, release_tag = None):
+def update_redmine(db_password = None, redmine_host = None, release_tag = None, invalidate_sessions = False):
 
     # Connect to the aegir host.
     fabric.env.host_string = redmine_host
@@ -90,7 +94,10 @@ def update_redmine(db_password = None, redmine_host = None, release_tag = None):
         fabric.run("bundle install --without development test rmagick postgresql sqlite", pty=True)
 
         logger('Running Redmine migration')
-        fabric.run("bundle exec rake generate_secret_token", pty=True)
+        if invalidate_sessions:
+            fabric.run("bundle exec rake generate_secret_token", pty=True)
+        else:
+            fabric.run("cp -f /var/www/redmine/config/initializers/secret_token.rb /var/www/redmine-%s/config/initializers/" % (release_tag), pty=True)
 
         fabric.run("bundle exec rake db:migrate RAILS_ENV=production", pty=True)
 
