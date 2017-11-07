@@ -91,11 +91,6 @@ def update_redmine(db_password = None, redmine_host = None, release_tag = None, 
     fabric.run("rm -f /var/www/%s/files/delete.me" % (build), pty=True)
     fabric.run("cp -al /var/www/redmine-staging/files /var/www/%s/" % (build), pty=True)
 
-    logger('Copying configuration')
-    fabric.run("cp -f /var/www/redmine-staging/config/database.yml /var/www/%s/config/" % (build), pty=True)
-    fabric.run("cp -f /var/www/redmine-staging/config/configuration.yml /var/www/%s/config/" % (build), pty=True)
-    fabric.run("cp -f /var/www/redmine-staging/config/newrelic.yml /var/www/%s/config/" % (build), pty=True)
-
     with fabric.cd("/var/www/%s" % (build)):
         logger('Running Redmine bundler')
         fabric.run("bundle install --without development test rmagick postgresql sqlite", pty=True)
