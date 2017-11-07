@@ -97,17 +97,16 @@ def update_redmine(db_password = None, redmine_host = None, release_tag = None, 
 
         logger('Running Redmine migration')
         if invalidate_sessions:
-            fabric.run("bundle exec rake generate_secret_token", pty=True)
+            fabric.run("bundle exec rake generate_secret_token RAILS_ENV=staging", pty=True)
         else:
             fabric.run("cp -f /var/www/redmine-staging/config/initializers/secret_token.rb /var/www/%s/config/initializers/" % (build), pty=True)
 
-        fabric.run("bundle exec rake db:migrate RAILS_ENV=production", pty=True)
+        fabric.run("bundle exec rake db:migrate RAILS_ENV=staging", pty=True)
 
-        fabric.run("bundle exec rake redmine:plugins:migrate RAILS_ENV=production", pty=True)
+        fabric.run("bundle exec rake redmine:plugins:migrate RAILS_ENV=staging", pty=True)
 
         logger('Cleaning up')
-        fabric.run("bundle exec rake tmp:cache:clear", pty=True)
-        #fabric.run("rake tmp:sessions:clear", pty=True)
+        fabric.run("bundle exec rake tmp:cache:clear RAILS_ENV=staging", pty=True)
 
     logger('Setting the new version of Redmine')
     with fabric.cd("/var/www"):
