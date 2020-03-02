@@ -105,7 +105,6 @@ def update_redmine(db_password = None, redmine_host = None, release_tag = None, 
 
         logger('Cleaning up')
         fabric.run("bundle exec rake tmp:cache:clear", pty=True)
-        fabric.run("bundle exec rake tmp:sessions:clear", pty=True)
 
     logger('Setting the new version of Redmine')
     with fabric.cd("/var/www"):
